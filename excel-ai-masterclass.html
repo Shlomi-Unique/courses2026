@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel + AI Master Class | קורס מעשי – שלומי, Microsoft MVP | UniqueTech</title>
+<meta name="description" content="קורס מעשי שייקח אתכם משימוש יומיומי באקסל ליכולת לבנות אוטומציות, פתרונות ניתוח נתונים, דוחות חכמים, Power Query, Power Pivot ו-VBA בשילוב AI. מסלול בוקר/ערב בזום. מספר מקומות מוגבל.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --dark:  #0d1b3e;
+  --navy:  #1a237e;
+  --gold:  #f5a623;
+  --green: #18a558;
+  --excel: #217346;
+  --pq:    #d83b01;
+  --pp:    #a4373a;
+  --vba:   #6a1b9a;
+  --ai:    #0277bd;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Heebo', Arial, sans-serif;
+  background: #f0f4f8;
+  color: #1a1a2e;
+  direction: rtl;
+  text-align: right;
+  line-height: 1.55;
+}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; }
+
+/* ===== STICKY HEADER ===== */
+.site-header {
+  background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+.sh-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 28px;
+  gap: 16px;
+}
+.sh-brand { display:flex; align-items:center; gap:10px; color:#fff; }
+.sh-brand .logo-mark {
+  font-size: 1.35em; font-weight: 900;
+  background: linear-gradient(90deg,#fff,var(--gold));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+.sh-brand .logo-sub { font-size: 0.72em; color: rgba(255,255,255,0.6); font-weight:500; }
+.sh-cta {
+  background: var(--gold);
+  color: #0d1b3e;
+  font-weight: 800;
+  padding: 9px 22px;
+  border-radius: 30px;
+  font-size: 0.92em;
+  white-space: nowrap;
+  transition: transform .18s, box-shadow .18s;
+}
+.sh-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(245,166,35,0.45); }
+
+/* ===== HERO ===== */
+.hero {
+  background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+  padding: 0 0 40px;
+}
+.hero-banner {
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 0 0 18px 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.hero-banner img { width: 100%; }
+.hero-body {
+  max-width: 860px;
+  margin: 34px auto 0;
+  padding: 0 24px;
+  text-align: center;
+  color: #fff;
+}
+.hero-mvp {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,166,35,0.15);
+  border: 1px solid rgba(245,166,35,0.45);
+  border-radius: 30px;
+  padding: 7px 20px;
+  color: var(--gold);
+  font-size: 0.9em; font-weight: 700;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: 2.5em; font-weight: 900; line-height: 1.18;
+  margin-bottom: 14px;
+}
+.hero h1 .accent {
+  background: linear-gradient(90deg, var(--gold), #ffd27a);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-tag { font-size: 1.12em; color: rgba(255,255,255,0.85); margin-bottom: 28px; }
+.hero-cta-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), #ffba3a);
+  color: #0d1b3e; font-weight: 800; font-size: 1.05em;
+  padding: 15px 36px; border-radius: 40px;
+  box-shadow: 0 8px 24px rgba(245,166,35,0.4);
+  transition: transform .18s, box-shadow .18s;
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(245,166,35,0.55); }
+.btn-ghost {
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  color: #fff; font-weight: 700; font-size: 1.05em;
+  padding: 15px 32px; border-radius: 40px;
+  transition: background .18s;
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.18); }
+
+/* ===== SECTION SHELL ===== */
+section { padding: 56px 24px; }
+.wrap { max-width: 1000px; margin: 0 auto; }
+.sec-title {
+  font-size: 2em; font-weight: 900; text-align: center;
+  color: var(--dark); margin-bottom: 10px;
+}
+.sec-sub {
+  text-align: center; color: #5a6478; font-size: 1.05em;
+  max-width: 640px; margin: 0 auto 38px;
+}
+
+/* ===== HIGHLIGHT QUOTE ===== */
+.highlight {
+  background: linear-gradient(135deg, var(--gold) 0%, #ffba3a 100%);
+  padding: 50px 24px;
+}
+.highlight .quote {
+  max-width: 820px; margin: 0 auto; text-align: center;
+}
+.highlight .quote-mark { font-size: 3.5em; line-height: 0.6; color: rgba(13,27,62,0.25); font-weight: 900; }
+.highlight .quote-text {
+  font-size: 1.7em; font-weight: 800; color: var(--dark); line-height: 1.4; margin: 8px 0 16px;
+}
+.highlight .quote-by { font-size: 1em; font-weight: 600; color: rgba(13,27,62,0.7); }
+
+/* ===== BUILD CARDS ===== */
+.build-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+.build-card {
+  background: #fff; border-radius: 16px; padding: 24px 22px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.07);
+  border: 1px solid #eaeef3;
+  display: flex; align-items: flex-start; gap: 14px;
+  transition: transform .2s, box-shadow .2s;
+}
+.build-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(0,0,0,0.12); }
+.build-card .bc-check {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(24,165,88,0.12); color: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1em; font-weight: 900;
+}
+.build-card h3 { font-size: 1.08em; font-weight: 800; margin-bottom: 4px; color: var(--dark); }
+.build-card p { font-size: 0.9em; color: #5a6478; }
+
+/* ===== TOOLS BAR ===== */
+.tools {
+  background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+}
+.tools .sec-title, .tools .sec-sub { color: #fff; }
+.tools .sec-sub { color: rgba(255,255,255,0.75); }
+.tools-row {
+  display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+}
+.tool-chip {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 18px 26px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  min-width: 130px;
+  transition: transform .2s, background .2s;
+}
+.tool-chip:hover { transform: translateY(-4px); background: rgba(255,255,255,0.12); }
+.tool-chip .tc-icon {
+  width: 52px; height: 52px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5em; font-weight: 900; color: #fff;
+}
+.tool-chip .tc-name { color: #fff; font-weight: 700; font-size: 0.95em; }
+.tool-chip .tc-desc { color: rgba(255,255,255,0.55); font-size: 0.75em; }
+.ic-excel { background: var(--excel); }
+.ic-pq    { background: var(--pq); }
+.ic-pp    { background: var(--pp); }
+.ic-vba   { background: var(--vba); }
+.ic-ai    { background: linear-gradient(135deg,#0277bd,#00bcd4); }
+
+.ai-logos { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+.ai-logo {
+  background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  color:#fff; font-weight:700; font-size:0.9em; padding:10px 22px; border-radius:30px;
+}
+
+/* ===== FLEXIBILITY ===== */
+.flex-band { background: #fff; }
+.flex-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px;
+}
+.flex-card {
+  border: 1px solid #eaeef3; border-radius: 16px; padding: 26px 24px;
+  background: #f7f9fc; text-align: center;
+}
+.flex-card .fc-icon { font-size: 2.2em; margin-bottom: 10px; }
+.flex-card h3 { font-size: 1.12em; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+.flex-card p { font-size: 0.92em; color: #5a6478; }
+
+/* ===== TRACKS ===== */
+.tracks { background: #eef2f7; }
+.track-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:16px; }
+.track-card {
+  background:#fff; border-radius:16px; padding:26px 22px; text-align:center;
+  box-shadow:0 6px 20px rgba(0,0,0,0.06); border-top:4px solid var(--gold);
+}
+.track-card .t-icon { font-size:2.4em; margin-bottom:10px; }
+.track-card h3 { font-size:1.15em; font-weight:800; color:var(--dark); margin-bottom:6px; }
+.track-card p { font-size:0.9em; color:#5a6478; }
+
+/* ===== AUDIENCE ===== */
+.audience { background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%); color:#fff; text-align:center; }
+.audience .sec-title { color:#fff; }
+.audience .aud-text { max-width: 760px; margin: 0 auto 14px; font-size: 1.25em; font-weight: 600; line-height:1.6; }
+.audience .aud-highlight { color: var(--gold); font-weight: 800; }
+.audience .aud-emph { font-size: 1.4em; font-weight: 900; margin-top: 22px; }
+
+/* ===== PRICING ===== */
+.pricing { background:#fff; }
+.price-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:22px; max-width:760px; margin:0 auto; }
+.price-card {
+  border-radius:20px; padding:34px 30px; text-align:center; position:relative;
+  border:2px solid #e6eaf0; background:#f9fbfd;
+}
+.price-card.launch {
+  border:2px solid var(--gold);
+  background: linear-gradient(160deg,#fffdf6,#fff6e0);
+  box-shadow: 0 14px 40px rgba(245,166,35,0.25);
+}
+.price-ribbon {
+  position:absolute; top:-15px; right:50%; transform:translateX(50%);
+  background: var(--green); color:#fff; font-weight:800; font-size:0.82em;
+  padding:6px 20px; border-radius:30px; white-space:nowrap;
+  box-shadow:0 4px 12px rgba(24,165,88,0.4);
+}
+.price-label { font-size:1.05em; font-weight:700; color:#5a6478; margin-bottom:14px; }
+.price-card.launch .price-label { color:#9a6b00; }
+.price-old { font-size:1.1em; color:#b0b6c0; text-decoration:line-through; margin-bottom:4px; }
+.price-amount { font-size:3em; font-weight:900; color:var(--dark); line-height:1; }
+.price-card.launch .price-amount { color:#bb7a00; }
+.price-amount small { font-size:0.34em; font-weight:700; color:#8a91a0; }
+.price-vat { font-size:0.9em; color:#8a91a0; margin-top:8px; }
+.price-note { font-size:0.92em; color:#5a6478; margin-top:16px; line-height:1.5; }
+.price-card.launch .price-note { color:#9a6b00; font-weight:600; }
+.price-card .price-cta {
+  display:inline-block; margin-top:22px; background:var(--dark); color:#fff;
+  font-weight:800; padding:12px 30px; border-radius:30px; transition:background .18s;
+}
+.price-card.launch .price-cta { background:linear-gradient(135deg,var(--gold),#ffba3a); color:#0d1b3e; }
+.price-card .price-cta:hover { opacity:0.92; }
+
+/* ===== SCARCITY ===== */
+.scarcity {
+  background: linear-gradient(135deg,#b71c1c,#7a0e0e); color:#fff; text-align:center; padding:38px 24px;
+}
+.scarcity h3 { font-size:1.5em; font-weight:900; margin-bottom:8px; }
+.scarcity p { font-size:1.05em; opacity:0.92; }
+
+/* ===== FINAL CTA / CONTACT ===== */
+.contact { background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%); color:#fff; text-align:center; }
+.contact .sec-title { color:#fff; }
+.contact .cf-sub { color: rgba(255,255,255,0.8); margin-bottom: 32px; font-size:1.05em; }
+.cf-grid { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; max-width:760px; margin:0 auto 30px; }
+.cf-item {
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,0.1); border-radius:12px; padding:16px 24px; min-width:200px;
+}
+.cf-item .ci-icon { font-size:1.5em; }
+.cf-item .ci-label { font-size:0.72em; color:rgba(255,255,255,0.6); display:block; }
+.cf-item a, .cf-item .ci-val { font-size:0.95em; font-weight:700; color:#fff; }
+.cf-item a:hover { text-decoration:underline; }
+.hashtags { max-width:760px; margin:26px auto 0; color:rgba(255,255,255,0.45); font-size:0.82em; line-height:1.9; }
+.footer-note { text-align:center; background:#0a1430; color:rgba(255,255,255,0.4); font-size:0.8em; padding:18px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 620px) {
+  .hero h1 { font-size: 1.75em; }
+  .hero-tag { font-size: 1em; }
+  .sec-title { font-size: 1.5em; }
+  .highlight .quote-text { font-size: 1.2em; }
+  section { padding: 40px 18px; }
+  .audience .aud-text { font-size: 1.05em; }
+  .audience .aud-emph { font-size: 1.15em; }
+  .price-amount { font-size: 2.4em; }
+  .sh-brand .logo-sub { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== STICKY HEADER ===== -->
+<header class="site-header" id="top">
+  <div class="sh-inner">
+    <div class="sh-brand">
+      <div>
+        <div class="logo-mark">The UNIQUE Way</div>
+        <div class="logo-sub">שלומי · Microsoft Excel MVP</div>
+      </div>
+    </div>
+    <a href="#contact" class="sh-cta">📩 שלחו לי "פרטים"</a>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-banner">
+    <img src="assets/excel-ai-masterclass-banner.png" alt="Excel + AI Master Class – העובד שמבין Excel ו-AI יהיה הכוכב בארגון">
+  </div>
+  <div class="hero-body">
+    <div class="hero-mvp">🏆 שלומי – Microsoft Excel MVP · מעל 35 שנות ניסיון</div>
+    <h1>Excel <span class="accent">+ AI</span> Master Class</h1>
+    <p class="hero-tag">קורס מעשי שייקח אתכם משימוש יומיומי באקסל — ליכולת לבנות אוטומציות, פתרונות ניתוח נתונים, דוחות חכמים ופתרונות AI אמיתיים מהשטח.</p>
+    <div class="hero-cta-row">
+      <a href="#pricing" class="btn-primary">💰 מחיר השקה — 2,990 ₪</a>
+      <a href="#contact" class="btn-ghost">👇 כתבו לי "פרטים"</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HIGHLIGHT QUOTE ===== -->
+<div class="highlight">
+  <div class="quote">
+    <div class="quote-mark">"</div>
+    <div class="quote-text">לראשונה אני פותח לציבור הרחב את הידע והפתרונות שבמשך שנים היו זמינים בעיקר לעובדים בחברות ובארגונים.</div>
+    <div class="quote-by">— שלומי, Microsoft Excel MVP · The UNIQUE Way</div>
+  </div>
+</div>
+
+<!-- ===== WHAT YOU'LL BUILD ===== -->
+<section>
+  <div class="wrap">
+    <h2 class="sec-title">מה תוכלו לבנות בסיום הקורס</h2>
+    <p class="sec-sub">לא עוד "להשתמש באקסל" — אלא להפוך לאדם שבונה פתרונות מקצה לקצה.</p>
+    <div class="build-grid">
+      <div class="build-card">
+        <div class="bc-check">✓</div>
+        <div><h3>אוטומציות</h3><p>תהליכים שחוזרים על עצמם — שירוצו לבד, בלחיצת כפתור.</p></div>
+      </div>
+      <div class="build-card">
+        <div class="bc-check">✓</div>
+        <div><h3>פתרונות ניתוח נתונים</h3><p>להפוך טבלאות גולמיות לתובנות עסקיות ברורות.</p></div>
+      </div>
+      <div class="build-card">
+        <div class="bc-check">✓</div>
+        <div><h3>דוחות חכמים</h3><p>דוחות דינמיים שמתעדכנים אוטומטית ומציגים בדיוק את מה שצריך.</p></div>
+      </div>
+      <div class="build-card">
+        <div class="bc-check">✓</div>
+        <div><h3>Power Query</h3><p>שאיבה, ניקוי ושינוי צורה של נתונים מכל מקור — בלי קוד.</p></div>
+      </div>
+      <div class="build-card">
+        <div class="bc-check">✓</div>
+        <div><h3>Power Pivot</h3><p>מודל נתונים, קשרים ומדדים לניתוח בקנה מידה גדול.</p></div>
+      </div>
+      <div class="build-card">
+        <div class="bc-check">✓</div>
+        <div><h3>VBA בשילוב AI</h3><p>קוד שכותב את עצמו — אוטומציה מתקדמת בעזרת בינה מלאכותית.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TOOLS ===== -->
+<section class="tools">
+  <div class="wrap">
+    <h2 class="sec-title">הכלים שתשלטו בהם</h2>
+    <p class="sec-sub">כל מה שצריך כדי להפוך לאדם שפותר בעיות בארגון — במקום מי שמחכה שמישהו אחר יפתור.</p>
+    <div class="tools-row">
+      <div class="tool-chip"><div class="tc-icon ic-excel">X</div><div class="tc-name">Excel</div><div class="tc-desc">מהיסוד ועד מתקדם</div></div>
+      <div class="tool-chip"><div class="tc-icon ic-pq">PQ</div><div class="tc-name">Power Query</div><div class="tc-desc">עיבוד נתונים</div></div>
+      <div class="tool-chip"><div class="tc-icon ic-pp">PP</div><div class="tc-name">Power Pivot</div><div class="tc-desc">מודל נתונים</div></div>
+      <div class="tool-chip"><div class="tc-icon ic-vba">{ }</div><div class="tc-name">VBA</div><div class="tc-desc">אוטומציה בקוד</div></div>
+      <div class="tool-chip"><div class="tc-icon ic-ai">AI</div><div class="tc-name">AI</div><div class="tc-desc">בינה מלאכותית</div></div>
+    </div>
+    <div class="ai-logos">
+      <span class="ai-logo">🤖 ChatGPT</span>
+      <span class="ai-logo">🟣 Claude</span>
+      <span class="ai-logo">🟦 Copilot</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FLEXIBILITY ===== -->
+<section class="flex-band">
+  <div class="wrap">
+    <h2 class="sec-title">המבנה הכי גמיש שיש</h2>
+    <p class="sec-sub">הדבר שאני הכי אוהב במבנה שבחרתי הוא הגמישות. אתם בונים בדיוק את המסלול שמתאים לכם.</p>
+    <div class="flex-grid">
+      <div class="flex-card">
+        <div class="fc-icon">🧩</div>
+        <h3>רכישה לפי מפגש</h3>
+        <p>לא חייבים לרכוש את כל הקורס. כל מפגש ניתן לרכישה בנפרד.</p>
+      </div>
+      <div class="flex-card">
+        <div class="fc-icon">⏭️</div>
+        <h3>מדלגים על מה שמכירים</h3>
+        <p>יש נושא שאתם כבר שולטים בו? פשוט מדלגים ומשלמים רק על מה שצריך.</p>
+      </div>
+      <div class="flex-card">
+        <div class="fc-icon">🎯</div>
+        <h3>מסלול מלא במחיר מוזל</h3>
+        <p>רוצים את התמונה המלאה? נרשמים למסלול המלא ונהנים ממחיר מוזל.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRACKS ===== -->
+<section class="tracks">
+  <div class="wrap">
+    <h2 class="sec-title">איך זה עובד</h2>
+    <p class="sec-sub">מסלולי בוקר וערב, הכל בזום, ומעל הכל — מעשי לחלוטין.</p>
+    <div class="track-grid">
+      <div class="track-card"><div class="t-icon">🕘</div><h3>מסלול בוקר</h3><p>למי שנוח ללמוד בשעות הבוקר.</p></div>
+      <div class="track-card"><div class="t-icon">🕔</div><h3>מסלול ערב</h3><p>אחרי יום העבודה, מהבית.</p></div>
+      <div class="track-card"><div class="t-icon">💻</div><h3>הכל בזום</h3><p>מתחברים מכל מקום, בלי לבזבז זמן בדרכים.</p></div>
+      <div class="track-card"><div class="t-icon">🛠️</div><h3>מעשי לגמרי</h3><p>דוגמאות ופתרונות אמיתיים מהשטח — לא תיאוריה.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== AUDIENCE ===== -->
+<section class="audience">
+  <div class="wrap">
+    <h2 class="sec-title">למי הקורס מתאים?</h2>
+    <p class="aud-text">אם אתם עובדים עם <span class="aud-highlight">Excel</span> ורוצים להיות האנשים שפותרים בעיות בארגון — במקום אלה שמחכים שמישהו אחר יפתור אותן —</p>
+    <p class="aud-emph">זה הקורס בשבילכם. 🎯</p>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <h2 class="sec-title">מחיר הקורס המלא</h2>
+    <p class="sec-sub">מסלול מלא — כל הנושאים, מההתחלה ועד היכולת לבנות פתרונות עצמאית.</p>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-label">מחיר מלא</div>
+        <div class="price-amount">4,900<small> ₪</small></div>
+        <div class="price-vat">+ מע"מ</div>
+        <div class="price-note">המסלול המלא, גישה לכל המפגשים.</div>
+        <a href="#contact" class="price-cta">לפרטים והרשמה</a>
+      </div>
+      <div class="price-card launch">
+        <div class="price-ribbon">🔥 ל-30 הנרשמים הראשונים</div>
+        <div class="price-label">מחיר השקה</div>
+        <div class="price-old">4,900 ₪</div>
+        <div class="price-amount">2,990<small> ₪</small></div>
+        <div class="price-vat">+ מע"מ</div>
+        <div class="price-note">חיסכון של למעלה מ-1,900 ₪ — בכפוף לזמינות מקומות.</div>
+        <a href="#contact" class="price-cta">🚀 שריינו מקום במחיר השקה</a>
+      </div>
+    </div>
+    <p class="sec-sub" style="margin-top:34px;margin-bottom:0;">💡 מעדיפים מפגשים בודדים? אפשר גם לרכוש כל מפגש בנפרד — כתבו לי "פרטים".</p>
+  </div>
+</section>
+
+<!-- ===== SCARCITY ===== -->
+<div class="scarcity">
+  <h3>⏳ מספר המקומות מוגבל</h3>
+  <p>הפרטים המלאים יפורסמו בקרוב — והמחיר המוזל שמור ל-30 הנרשמים הראשונים בלבד.</p>
+</div>
+
+<!-- ===== CONTACT / FINAL CTA ===== -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2 class="sec-title">📬 רוצים את כל הפרטים?</h2>
+    <p class="cf-sub">כתבו לי "פרטים" או שלחו הודעה — ואשלח לכם את דף המידע המלא ברגע שיעלה.</p>
+    <div class="cf-grid">
+      <a class="cf-item" href="https://wa.me/972505504870?text=%D7%A4%D7%A8%D7%98%D7%99%D7%9D" target="_blank" rel="noopener">
+        <span class="ci-icon">💬</span>
+        <div><span class="ci-label">וואטסאפ</span><span class="ci-val">שלחו "פרטים"</span></div>
+      </a>
+      <a class="cf-item" href="tel:0505504870">
+        <span class="ci-icon">📱</span>
+        <div><span class="ci-label">נייד</span><span class="ci-val">050-5504870</span></div>
+      </a>
+      <a class="cf-item" href="mailto:shlomi@uniquetech.co.il?subject=Excel%20%2B%20AI%20Master%20Class%20-%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D">
+        <span class="ci-icon">📧</span>
+        <div><span class="ci-label">דוא"ל</span><span class="ci-val">shlomi@uniquetech.co.il</span></div>
+      </a>
+      <a class="cf-item" href="http://uniquetech.co.il" target="_blank" rel="noopener">
+        <span class="ci-icon">🌐</span>
+        <div><span class="ci-label">אתר</span><span class="ci-val">uniquetech.co.il</span></div>
+      </a>
+    </div>
+    <div class="hashtags">
+      #Excel #AI #PowerQuery #PowerPivot #VBA #ChatGPT #Claude #Copilot #DataAnalysis #MicrosoftMVP #ExcelTraining #TheUniqueWay #UniQueTech
+    </div>
+  </div>
+</section>
+
+<div class="footer-note">© 2026 The UNIQUE Way · UniqueTech · שלומי — Microsoft Excel MVP. כל הזכויות שמורות.</div>
+
+</body>
+</html>

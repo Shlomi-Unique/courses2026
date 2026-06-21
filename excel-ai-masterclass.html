@@ -76,13 +76,30 @@ a { text-decoration: none; }
   padding: 0 0 40px;
 }
 .hero-banner {
+  position: relative;
   max-width: 1000px;
   margin: 0 auto;
   border-radius: 0 0 18px 18px;
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0,0,0,0.4);
 }
-.hero-banner img { width: 100%; }
+.hero-banner img,
+.hero-banner video { width: 100%; display: block; }
+.hero-sound {
+  position: absolute;
+  bottom: 14px; left: 14px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  background: rgba(13,27,62,0.55);
+  color: #fff;
+  font-size: 1.15em;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background .18s, transform .18s;
+}
+.hero-sound:hover { background: rgba(13,27,62,0.85); transform: scale(1.08); }
 .hero-body {
   max-width: 860px;
   margin: 34px auto 0;
@@ -334,7 +351,13 @@ section { padding: 56px 24px; }
 <!-- ===== HERO ===== -->
 <div class="hero">
   <div class="hero-banner">
-    <img src="assets/excel-ai-masterclass-banner.png" alt="Excel + AI Master Class – העובד שמבין Excel ו-AI יהיה הכוכב בארגון">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto"
+           poster="assets/excel-ai-masterclass-banner.png">
+      <source src="assets/excel-ai-masterclass-hero.mp4" type="video/mp4">
+      <img src="assets/excel-ai-masterclass-banner.png" alt="Excel + AI Master Class – העובד שמבין Excel ו-AI יהיה הכוכב בארגון">
+    </video>
+    <button class="hero-sound" type="button" aria-label="הפעלת/השתקת קול"
+            onclick="var v=this.parentNode.querySelector('video'); v.muted=!v.muted; this.textContent=v.muted?'🔇':'🔊';">🔇</button>
   </div>
   <div class="hero-body">
     <div class="hero-mvp">🏆 שלומי – Microsoft Excel MVP · מעל 35 שנות ניסיון</div>

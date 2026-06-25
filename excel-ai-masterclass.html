@@ -331,6 +331,43 @@ section { padding: 56px 24px; }
   .price-amount { font-size: 2.4em; }
   .sh-brand .logo-sub { display:none; }
 }
+
+/* ===== SYLLABUS (10 solutions) ===== */
+.syllabus { background: #eef2f7; }
+.syl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(370px, 1fr));
+  gap: 20px;
+}
+.syl-card {
+  background: #fff; border-radius: 18px; overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.07); border: 1px solid #eaeef3;
+  display: flex; flex-direction: column;
+  transition: transform .2s, box-shadow .2s;
+}
+.syl-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(0,0,0,0.12); }
+.syl-head { padding: 20px 24px; background: linear-gradient(135deg, var(--dark), var(--navy)); color: #fff; }
+.syl-num {
+  display: inline-block; background: rgba(245,166,35,0.18);
+  border: 1px solid rgba(245,166,35,0.5); color: var(--gold);
+  font-weight: 800; font-size: 0.76em; padding: 3px 13px; border-radius: 20px; margin-bottom: 9px;
+}
+.syl-title { font-size: 1.25em; font-weight: 900; line-height: 1.25; }
+.syl-body { padding: 22px 24px; flex: 1; }
+.syl-label { font-size: 0.82em; font-weight: 800; margin: 0 0 6px; }
+.syl-label.problem { color: var(--pq); }
+.syl-label.outcome { color: var(--green); margin-top: 18px; }
+.syl-label.tools   { color: var(--ai); margin-top: 18px; }
+.syl-problem { font-size: 0.95em; color: #444; line-height: 1.55; }
+.syl-list { list-style: none; }
+.syl-list li { font-size: 0.91em; color: #333; padding-right: 21px; position: relative; margin-bottom: 6px; line-height: 1.45; }
+.syl-list li::before { content: '✓'; position: absolute; right: 0; color: var(--green); font-weight: 900; }
+.syl-tools { display: flex; flex-wrap: wrap; gap: 7px; }
+.syl-tool { background: #eef2f7; border: 1px solid #dde3ea; border-radius: 20px; padding: 4px 13px; font-size: 0.8em; font-weight: 600; color: var(--dark); }
+@media (max-width: 620px) {
+  .syl-grid { grid-template-columns: 1fr; }
+  .syl-title { font-size: 1.12em; }
+}
 </style>
 </head>
 <body>
@@ -459,6 +496,182 @@ section { padding: 56px 24px; }
         <h3>כל יום שלישי</h3>
         <p>מתחילים ב-01/09/2026 · 10 מפגשים שבועיים.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SYLLABUS (10 solutions) ===== -->
+<section class="syllabus">
+  <div class="wrap">
+    <h2 class="sec-title">10 פתרונות שתיקחו איתכם לעבודה</h2>
+    <p class="sec-sub">כל מפגש הוא פתרון שלם שאפשר ליישם כבר למחרת בבוקר — מה נפתור, מה תצאו איתו, ובאילו כלים נשתמש.</p>
+    <div class="syl-grid">
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 1</div><div class="syl-title">לעבוד עם Excel בעידן ה-AI</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך להפוך את ה-AI לעוזר האישי שלכם בעבודה עם Excel, כך שתפסיקו לבזבז זמן על חיפושים, נוסחאות ושגיאות.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו:</div>
+          <ul class="syl-list">
+            <li>לכתוב נוסחאות מורכבות בעזרת AI</li>
+            <li>להסביר נוסחאות קיימות</li>
+            <li>לנתח קבצי Excel באמצעות AI</li>
+            <li>להשתמש ב-AI כדי לפתור בעיות אמיתיות</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">ChatGPT</span><span class="syl-tool">Claude</span><span class="syl-tool">Microsoft Copilot</span><span class="syl-tool">Prompt Engineering</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 2</div><div class="syl-title">לבנות דוחות שמנהלים אוהבים לראות</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך לבנות דוחות דינמיים שמציגים את הנתונים החשובים באמת.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו לבנות:</div>
+          <ul class="syl-list">
+            <li>דוח תקציב מול ביצוע</li>
+            <li>דוח מכירות</li>
+            <li>KPI</li>
+            <li>דוח ניהולי דינמי</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">XLOOKUP</span><span class="syl-tool">FILTER</span><span class="syl-tool">SORT</span><span class="syl-tool">UNIQUE</span><span class="syl-tool">LET</span><span class="syl-tool">Dynamic Arrays</span><span class="syl-tool">AI לכתיבת נוסחאות</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 3</div><div class="syl-title">להפסיק להעתיק ולהדביק</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך להפוך עשרות קבצים שמגיעים בכל חודש לדוח אחד שמתעדכן בלחיצת כפתור.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו:</div>
+          <ul class="syl-list">
+            <li>לאחד קבצים</li>
+            <li>לנקות נתונים</li>
+            <li>לייבא קבצים אוטומטית</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">Power Query</span><span class="syl-tool">Folder Import</span><span class="syl-tool">Transform Data</span><span class="syl-tool">Replace</span><span class="syl-tool">Split</span><span class="syl-tool">Merge Columns</span><span class="syl-tool">AI לכתיבת קוד M</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 4</div><div class="syl-title">להפוך ניקוי נתונים לאוטומטי</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך לבנות תהליך שמנקה ומכין נתונים באופן אוטומטי.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו:</div>
+          <ul class="syl-list">
+            <li>לאחד מקורות מידע</li>
+            <li>לבנות תהליך ETL</li>
+            <li>להכין נתונים לדוחות</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">Power Query</span><span class="syl-tool">Merge Queries</span><span class="syl-tool">Append Queries</span><span class="syl-tool">Parameters</span><span class="syl-tool">Functions</span><span class="syl-tool">AI לייעול שאילתות</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 5</div><div class="syl-title">לבנות מודל נתונים מקצועי</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך לחבר את כל הנתונים למודל אחד שמאפשר לענות על שאלות עסקיות מורכבות.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו לבנות:</div>
+          <ul class="syl-list">
+            <li>Dashboard מקצועי</li>
+            <li>מודל נתונים</li>
+            <li>קשרים בין טבלאות</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">Power Pivot</span><span class="syl-tool">Data Model</span><span class="syl-tool">Relationships</span><span class="syl-tool">Calendar Table</span><span class="syl-tool">Star Schema</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 6</div><div class="syl-title">לבנות מדדים עסקיים שמספרים את הסיפור</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך לחשב ביצועים עסקיים בצורה נכונה.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו לבנות:</div>
+          <ul class="syl-list">
+            <li>תקציב מול ביצוע</li>
+            <li>רווחיות</li>
+            <li>KPI</li>
+            <li>מכירות מצטברות</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">DAX</span><span class="syl-tool">Measures</span><span class="syl-tool">CALCULATE</span><span class="syl-tool">FILTER</span><span class="syl-tool">SUMX</span><span class="syl-tool">AI לכתיבת DAX</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 7</div><div class="syl-title">לנתח מגמות ולחזות ביצועים</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך לזהות מגמות, חריגות ושינויים לאורך זמן.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו לבנות:</div>
+          <ul class="syl-list">
+            <li>השוואה לשנה קודמת</li>
+            <li>YTD</li>
+            <li>Running Total</li>
+            <li>דירוגים</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">DAX מתקדם</span><span class="syl-tool">Time Intelligence</span><span class="syl-tool">RANKX</span><span class="syl-tool">Variables</span><span class="syl-tool">AI לשיפור נוסחאות</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 8</div><div class="syl-title">להפוך עבודות שחוזרות כל חודש לאוטומטיות</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך להפסיק לבצע פעולות ידניות שחוזרות על עצמן.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תדעו:</div>
+          <ul class="syl-list">
+            <li>להפיק קבצים</li>
+            <li>לעדכן דוחות</li>
+            <li>לבצע אוטומציה של משימות</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנלמד:</div>
+          <div class="syl-tools"><span class="syl-tool">VBA</span><span class="syl-tool">Macro Recorder</span><span class="syl-tool">Objects</span><span class="syl-tool">Loops</span><span class="syl-tool">AI לכתיבת VBA</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 9</div><div class="syl-title">לבנות מערכת BI באקסל</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך לחבר את כל הכלים למערכת אחת שעובדת כמו בארגון גדול.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תבנו:</div>
+          <ul class="syl-list">
+            <li>פתרון מלא מקצה לקצה</li>
+            <li>Dashboard</li>
+            <li>אוטומציה</li>
+            <li>דוחות</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנשלב:</div>
+          <div class="syl-tools"><span class="syl-tool">Excel</span><span class="syl-tool">Power Query</span><span class="syl-tool">Power Pivot</span><span class="syl-tool">DAX</span><span class="syl-tool">VBA</span><span class="syl-tool">AI</span></div>
+        </div>
+      </div>
+
+      <div class="syl-card">
+        <div class="syl-head"><div class="syl-num">מפגש 10</div><div class="syl-title">העתיד כבר כאן — AI שעובד בשבילכם</div></div>
+        <div class="syl-body">
+          <div class="syl-label problem">🎯 מה נפתור?</div>
+          <p class="syl-problem">איך להפוך את ה-AI מכלי שעונה על שאלות לעוזר שמבצע פעולות.</p>
+          <div class="syl-label outcome">✅ בסיום המפגש תכירו:</div>
+          <ul class="syl-list">
+            <li>יצירת סוכני AI</li>
+            <li>אוטומציה של תהליכים</li>
+            <li>העתיד של העבודה עם Excel</li>
+          </ul>
+          <div class="syl-label tools">🛠️ הכלים שנכיר:</div>
+          <div class="syl-tools"><span class="syl-tool">Claude</span><span class="syl-tool">Microsoft Copilot</span><span class="syl-tool">AI Agents</span></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

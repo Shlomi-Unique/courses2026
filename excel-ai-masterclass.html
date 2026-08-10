@@ -406,7 +406,11 @@ section { padding: 56px 24px; }
 <!-- ===== HERO ===== -->
 <div class="hero">
   <div class="hero-banner">
-    <img src="assets/hero-finance-banner.png" alt="איש הכספים החדש – Excel, AI ואוטומציה לעולם הכספים · שלומי, Microsoft Excel MVP">
+    <video id="heroVideo" src="assets/hero-invite.mp4"
+           poster="assets/hero-finance-banner.png"
+           autoplay muted loop playsinline preload="metadata"
+           aria-label="הזמנה לקורס – איש הכספים החדש · שלומי, Microsoft Excel MVP"></video>
+    <button id="heroSound" class="hero-sound" type="button" aria-label="הפעלת קול" title="לחצו לקול">🔇</button>
   </div>
   <div class="hero-body">
     <div class="hero-mvp">🏆 שלומי – Microsoft Excel MVP · מעל 35 שנות ניסיון</div>
@@ -811,6 +815,33 @@ section { padding: 56px 24px; }
 </section>
 
 <div class="footer-note">© 2026 The UNIQUE Way · UniqueTech · שלומי — Microsoft Excel MVP. כל הזכויות שמורות.</div>
+
+<script>
+(function () {
+  var video = document.getElementById('heroVideo');
+  var btn = document.getElementById('heroSound');
+  if (!video || !btn) return;
+
+  function render() {
+    var on = !video.muted;
+    btn.textContent = on ? '🔊' : '🔇';
+    btn.setAttribute('aria-label', on ? 'השתקת קול' : 'הפעלת קול');
+    btn.setAttribute('title', on ? 'לחצו להשתקה' : 'לחצו לקול');
+  }
+
+  btn.addEventListener('click', function () {
+    video.muted = !video.muted;
+    if (!video.muted) {
+      video.currentTime = 0;        // play the invitation from the start with sound
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+    render();
+  });
+
+  render();
+})();
+</script>
 
 </body>
 </html>

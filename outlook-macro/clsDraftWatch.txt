@@ -1,0 +1,14 @@
+' ===== Paste into a Class Module named clsDraftWatch =====
+Public WithEvents Insp As Outlook.Inspector
+Private mDone As Boolean
+
+Private Sub Insp_Activate()
+    If mDone Then Exit Sub
+    mDone = True
+    On Error Resume Next
+    FixDraftIfLtr Insp.CurrentItem
+End Sub
+
+Private Sub Insp_Close()
+    Set Insp = Nothing
+End Sub

@@ -1,0 +1,60 @@
+﻿// =====================================================================
+// מפגש 1 | Power Query א | פתרון ההדגמה: איחוד 12 קבצי יומן חודשיים
+// נובה הפצה בע"מ | ייצוא יומן 2025
+// סדר הבנייה: 1) פרמטר  2) פונקציה  3) שאילתה ראשית
+// =====================================================================
+
+
+// ---------- 1) פרמטר: נתיב התיקייה ----------
+// Home > Manage Parameters > New Parameter
+// Name: JournalFolder   Type: Text   Current Value: (הנתיב לתיקייה "הדגמה - ייצוא יומן 2025")
+// לדוגמה:  C:\Course\Session01\הדגמה - ייצוא יומן 2025\
+
+
+// ---------- 2) פונקציה: fxCleanJournal ----------
+// מנקה קובץ ייצוא אחד: מדלגת על שורות הכותרת, מקדמת כותרות,
+// בוחרת עמודות לפי שם (ולכן לא משנה סדר העמודות או עמודה מיותרת),
+// ומוחקת את שורות הסיכום וה"הופק ב-" שבתחתית.
+(src as binary) as table =>
+let
+    Wb      = Excel.Workbook(src, null, true),
+    Sheet   = Wb{[Item = "Sheet1", Kind = "Sheet"]}[Data],
+    Skip    = Table.Skip(Sheet, 3),
+    Headers = Table.PromoteHeaders(Skip, [PromoteAllScalars = true]),
+    Keep    = Table.SelectColumns(
+                Headers,
+                {"תאריך אסמכתא", "מס' תנועה", "כרטיס חשבון", "שם כרטיס", "פרטים", "מחלקה", "חובה", "זכות"},
+                MissingField.UseNull),
+    Rows    = Table.SelectRows(Keep, each [#"מס' תנועה"] <> null)
+in
+    Rows
+
+
+// ---------- 3) שאילתה ראשית: Journal_2025 ----------
+let
+    Source     = Folder.Files(JournalFolder),
+    // רק קבצי Excel, בלי קבצים זמניים (~$) ובלי "קרא אותי.txt"
+    OnlyXlsx   = Table.SelectRows(Source, each [Extension] = ".xlsx" and not Text.StartsWith([Name], "~$")),
+    Cleaned    = Table.AddColumn(OnlyXlsx, "Data", each fxCleanJournal([Content])),
+    KeepCols   = Table.SelectColumns(Cleaned, {"Name", "Data"}),
+    Expanded   = Table.ExpandTableColumn(
+                    KeepCols, "Data",
+                    {"תאריך אסמכתא", "מס' תנועה", "כרטיס חשבון", "שם כרטיס", "פרטים", "מחלקה", "חובה", "זכות"}),
+    // "he-IL" פותר גם את התאריכים שיוצאו כטקסט (dd/mm/yyyy) ברבעון השני
+    Typed      = Table.TransformColumnTypes(
+                    Expanded,
+                    {{"תאריך אסמכתא", type date}, {"מס' תנועה", Int64.Type}, {"כרטיס חשבון", Int64.Type},
+                     {"שם כרטיס", type text}, {"פרטים", type text}, {"מחלקה", Int64.Type},
+                     {"חובה", type number}, {"זכות", type number}},
+                    "he-IL"),
+    ZeroBlanks = Table.ReplaceValue(Typed, null, 0, Replacer.ReplaceValue, {"חובה", "זכות"}),
+    // פקודת הסגירה של 31/12 מאפסת את כרטיסי התוצאה. לניתוח חודשי מסירים אותה
+    NoClosing  = Table.SelectRows(
+                    ZeroBlanks,
+                    each not Text.Contains([פרטים], "סגירת כרטיס תוצאה")
+                     and not Text.Contains([פרטים], "העברת רווח שנת")),
+    Amount     = Table.AddColumn(NoClosing, "סכום", each [חובה] - [זכות], type number),
+    Month      = Table.AddColumn(Amount, "חודש", each Date.StartOfMonth([תאריך אסמכתא]), type date),
+    Renamed    = Table.RenameColumns(Month, {{"Name", "קובץ מקור"}})
+in
+    Renamed

@@ -1,0 +1,30 @@
+﻿// =====================================================================
+// מפגש 1 | פתרון התרגיל: איחוד קובצי CSV של 2026 (פברואר עד אוגוסט)
+// מערכת אחרת: כותרות באנגלית, סכום אחד עם סימן, קידוד עברית Windows-1255
+// =====================================================================
+
+// פרמטר: CsvFolder = הנתיב לתיקייה "תרגיל - ייצוא CSV 2026"
+
+let
+    Source   = Folder.Files(CsvFolder),
+    OnlyCsv  = Table.SelectRows(Source, each [Extension] = ".csv"),
+    // Encoding = 1255 : בלי זה העברית נראית כמו ג'יבריש (×ž×¢×´×ž...)
+    Parsed   = Table.AddColumn(
+                  OnlyCsv, "Data",
+                  each Table.PromoteHeaders(
+                         Csv.Document([Content], [Delimiter = ",", Encoding = 1255, QuoteStyle = QuoteStyle.Csv]),
+                         [PromoteAllScalars = true])),
+    KeepCols = Table.SelectColumns(Parsed, {"Name", "Data"}),
+    Expanded = Table.ExpandTableColumn(
+                  KeepCols, "Data",
+                  {"Date", "Ref", "Account", "Account Name", "Description", "Dept", "Amount"},
+                  {"תאריך אסמכתא", "מס' תנועה", "כרטיס חשבון", "שם כרטיס", "פרטים", "מחלקה", "סכום"}),
+    Typed    = Table.TransformColumnTypes(
+                  Expanded,
+                  {{"תאריך אסמכתא", type date}, {"מס' תנועה", Int64.Type}, {"כרטיס חשבון", Int64.Type},
+                   {"שם כרטיס", type text}, {"פרטים", type text}, {"מחלקה", Int64.Type}, {"סכום", type number}},
+                  "he-IL"),
+    Month    = Table.AddColumn(Typed, "חודש", each Date.StartOfMonth([תאריך אסמכתא]), type date),
+    Renamed  = Table.RenameColumns(Month, {{"Name", "קובץ מקור"}})
+in
+    Renamed

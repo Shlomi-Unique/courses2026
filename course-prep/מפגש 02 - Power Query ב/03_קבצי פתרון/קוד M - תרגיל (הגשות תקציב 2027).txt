@@ -1,0 +1,32 @@
+﻿// =====================================================================
+// מפגש 2 | פתרון התרגיל: איחוד הגשות תקציב 2027 מ-5 מחלקות
+// =====================================================================
+// פרמטר: Sub2027 = הנתיב לתיקייה "תרגיל - הגשות תקציב 2027"
+
+let
+    Source   = Folder.Files(Sub2027),
+    Xlsx     = Table.SelectRows(Source, each [Extension] = ".xlsx"),
+    // שם המחלקה מתוך שם הקובץ: "תקציב 2027 - שיווק.xlsx"
+    Dept     = Table.AddColumn(Xlsx, "שם מחלקה", each Text.BetweenDelimiters([Name], " - ", ".xlsx")),
+    Parsed   = Table.AddColumn(Dept, "T", each
+                  let
+                      s = Excel.Workbook([Content], null, true){[Item = "הגשה", Kind = "Sheet"]}[Data],
+                      h = Table.PromoteHeaders(Table.Skip(s, 3), [PromoteAllScalars = true]),
+                      r = Table.SelectRows(h, each [כרטיס חשבון] <> null),
+                      d = Table.RemoveColumns(r, {"סה""כ", "הערות"}),
+                      u = Table.UnpivotOtherColumns(d, {"כרטיס חשבון", "שם כרטיס"}, "חודש טקסט", "תקציב")
+                  in
+                      u),
+    Keep     = Table.SelectColumns(Parsed, {"שם מחלקה", "T"}),
+    Expanded = Table.ExpandTableColumn(Keep, "T", {"כרטיס חשבון", "שם כרטיס", "חודש טקסט", "תקציב"}),
+    // מחלקת שיווק כתבה "ינואר 2027" ושאר המחלקות "2027-01". שתי הצורות נקראות:
+    Month    = Table.AddColumn(Expanded, "חודש", each
+                  if Text.Contains([חודש טקסט], "-")
+                  then Date.FromText([חודש טקסט] & "-01")
+                  else Date.FromText([חודש טקסט], [Culture = "he-IL", Format = "MMMM yyyy"]),
+                  type date),
+    Typed    = Table.TransformColumnTypes(Table.RemoveColumns(Month, {"חודש טקסט"}),
+                  {{"כרטיס חשבון", Int64.Type}, {"שם כרטיס", type text}, {"תקציב", type number}})
+in
+    Typed
+// בדיקה: 96 שורות (8 כרטיסים × 12 חודשים), סך תקציב 2027 = 4,770,500

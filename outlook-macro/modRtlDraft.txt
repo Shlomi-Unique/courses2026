@@ -1,0 +1,210 @@
+' ===== Paste into a Module named modRtlDraft =====
+Option Explicit
+
+' Part of the signature file name in %APPDATA%\Microsoft\Signatures
+Private Const SIG_KEY As String = "2026-2027"
+Private Const PR_ATTACH_CONTENT_ID As String = "http://schemas.microsoft.com/mapi/proptag/0x3712001F"
+Private Const PR_ATTACHMENT_HIDDEN As String = "http://schemas.microsoft.com/mapi/proptag/0x7FFE000B"
+
+Private mSigImgs As Collection   ' Array(path, cid) of the last loaded signature
+
+' Manual run on the open draft (can be added as a ribbon button)
+Public Sub FixCurrentDraft()
+    If Application.ActiveInspector Is Nothing Then Exit Sub
+    FixDraftIfLtr Application.ActiveInspector.CurrentItem, True
+End Sub
+
+' Bulk run: fix every LTR draft in the Drafts folder in one go
+Public Sub FixAllDrafts()
+    Dim fld As Object, i As Long, it As Object, n As Long
+    Set fld = Application.Session.GetDefaultFolder(16)
+    For i = fld.Items.Count To 1 Step -1
+        Set it = fld.Items(i)
+        If FixDraftIfLtr(it) Then n = n + 1
+    Next i
+    MsgBox n & " drafts fixed (RTL + Arial + signature)."
+End Sub
+
+' Saved, unsent HTML draft whose own text (above the quoted mail) is not RTL:
+' make it RTL + Arial and add the default signature if it has none.
+Public Function FixDraftIfLtr(ByVal it As Object, Optional ByVal force As Boolean = False) As Boolean
+    If TypeName(it) <> "MailItem" Then Exit Function
+    Dim m As Outlook.MailItem
+    Set m = it
+    If m.Sent Then Exit Function
+    If Not force And m.EntryID = "" Then Exit Function
+    If m.BodyFormat <> olFormatHTML Then Exit Function
+
+    Dim html As String, bOpen As Long, bTagEnd As Long, qIdx As Long
+    html = m.HTMLBody
+    bOpen = InStr(1, html, "<body", vbTextCompare)
+    If bOpen = 0 Then Exit Function
+    bTagEnd = InStr(bOpen, html, ">")
+    qIdx = QuoteIndex(html, bTagEnd + 1)
+
+    Dim userPart As String, newUser As String
+    userPart = Mid$(html, bTagEnd + 1, qIdx - bTagEnd - 1)
+    If InStr(1, userPart, "rtl", vbTextCompare) > 0 Then Exit Function
+    If Len(Trim$(StripTags(userPart))) = 0 Then Exit Function
+
+    newUser = MakeRtl(userPart)
+    If Not HasSignature(userPart) Then
+        newUser = newUser & SignatureHtml()
+        AttachSignatureImages m
+    End If
+
+    m.HTMLBody = Left$(html, bTagEnd) & newUser & Mid$(html, qIdx)
+    m.Save
+    FixDraftIfLtr = True
+End Function
+
+' Start of the quoted original mail, or </body> if there is none
+Private Function QuoteIndex(ByVal html As String, ByVal fromPos As Long) As Long
+    Dim marks As Variant, i As Long, p As Long, best As Long
+    marks = Array("appendonsend", "divRplyFwdMsg", "<hr", "border-top:solid")
+    best = 0
+    For i = LBound(marks) To UBound(marks)
+        p = InStr(fromPos, html, marks(i), vbTextCompare)
+        If p > 0 Then
+            p = InStrRev(html, "<", p)
+            If p >= fromPos And (best = 0 Or p < best) Then best = p
+        End If
+    Next
+    If best = 0 Then best = InStr(fromPos, html, "</body", vbTextCompare)
+    If best = 0 Then best = Len(html) + 1
+    QuoteIndex = best
+End Function
+
+Private Function MakeRtl(ByVal s As String) As String
+    Dim re As Object
+    Set re = CreateObject("VBScript.RegExp")
+    re.Global = True
+    re.IgnoreCase = True
+    re.Pattern = "font-family\s*:[^;""']*;?"
+    s = re.Replace(s, "")
+    re.Pattern = "<p\b[^>]*>"
+    s = re.Replace(s, "<p dir=""rtl"" style=""direction:rtl;text-align:right;font-family:Arial,sans-serif;margin:0 0 10px 0"">")
+    MakeRtl = "<div dir=""rtl"" style=""direction:rtl;text-align:right;font-family:Arial,sans-serif"">" & s & "</div>"
+End Function
+
+Private Function HasSignature(ByVal s As String) As Boolean
+    Dim re As Object
+    Set re = CreateObject("VBScript.RegExp")
+    re.IgnoreCase = True
+    re.Pattern = "_MailAutoSig|id=""?[^"" >]*Signature|mvp\.microsoft\.com"
+    HasSignature = re.Test(s)
+End Function
+
+Private Function StripTags(ByVal s As String) As String
+    Dim re As Object
+    Set re = CreateObject("VBScript.RegExp")
+    re.Global = True
+    re.Pattern = "<[^>]+>"
+    StripTags = Replace(re.Replace(s, ""), "&nbsp;", " ")
+End Function
+
+' Body of the default signature file; its images become cid: references (see AttachSignatureImages)
+Private Function SignatureHtml() As String
+    Dim fso As Object, f As Object, sigDir As String, path As String
+    Set mSigImgs = Nothing
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    sigDir = Environ$("APPDATA") & "\Microsoft\Signatures"
+    If Not fso.FolderExists(sigDir) Then Exit Function
+    For Each f In fso.GetFolder(sigDir).Files
+        If LCase$(fso.GetExtensionName(f.Name)) = "htm" And InStr(1, f.Name, SIG_KEY) > 0 Then
+            path = f.path
+            Exit For
+        End If
+    Next
+    If path = "" Then Exit Function
+
+    Dim raw As String
+    raw = ReadText(path, "utf-8")
+    If InStr(1, raw, "windows-1255", vbTextCompare) > 0 Then raw = ReadText(path, "windows-1255")
+
+    Dim b1 As Long, b2 As Long, inner As String
+    b1 = InStr(1, raw, "<body", vbTextCompare)
+    If b1 = 0 Then Exit Function
+    b1 = InStr(b1, raw, ">") + 1
+    b2 = InStr(b1, raw, "</body", vbTextCompare)
+    If b2 = 0 Then b2 = Len(raw) + 1
+    inner = Mid$(raw, b1, b2 - b1)
+
+    Dim re As Object, mt As Object, src As String, imgPath As String, cid As String, k As Long
+    Set re = CreateObject("VBScript.RegExp")
+    re.Global = True
+    re.IgnoreCase = True
+    ' drop Word VML duplicates of the signature images
+    re.Pattern = "<!--\[if gte vml 1\]>[\s\S]*?<!\[endif\]-->"
+    inner = re.Replace(inner, "")
+    re.Pattern = "<!\[if !vml\]>|<!\[endif\]>"
+    inner = re.Replace(inner, "")
+
+    Set mSigImgs = New Collection
+    re.Pattern = "src=""([^""]+)"""
+    For Each mt In re.Execute(inner)
+        src = mt.SubMatches(0)
+        If LCase$(Left$(src, 4)) <> "http" And LCase$(Left$(src, 4)) <> "cid:" Then
+            imgPath = sigDir & "\" & Replace(URLDecode(src), "/", "\")
+            If Not fso.FileExists(imgPath) Then imgPath = sigDir & "\" & Replace(Replace(src, "%20", " "), "/", "\")
+            If fso.FileExists(imgPath) Then
+                k = k + 1
+                cid = "uniquesig" & k & Mid$(imgPath, InStrRev(imgPath, "."))
+                mSigImgs.Add Array(imgPath, cid)
+                inner = Replace(inner, "src=""" & src & """", "src=""cid:" & cid & """")
+            End If
+        End If
+    Next
+
+    SignatureHtml = "<p>&nbsp;</p>" & inner
+End Function
+
+Private Function ReadText(ByVal p As String, ByVal cs As String) As String
+    Dim st As Object
+    Set st = CreateObject("ADODB.Stream")
+    st.Type = 2
+    st.Charset = cs
+    st.Open
+    st.LoadFromFile p
+    ReadText = st.ReadText(-1)
+    st.Close
+End Function
+
+' Signature images as hidden inline attachments (cid), so they survive sending
+Private Sub AttachSignatureImages(ByVal m As Outlook.MailItem)
+    Dim c As Variant, att As Object
+    If mSigImgs Is Nothing Then Exit Sub
+    For Each c In mSigImgs
+        Set att = m.Attachments.Add(c(0), 1, 0)
+        att.PropertyAccessor.SetProperty PR_ATTACH_CONTENT_ID, c(1)
+        att.PropertyAccessor.SetProperty PR_ATTACHMENT_HIDDEN, True
+    Next
+End Sub
+
+' Decodes %xx sequences as UTF-8, keeps other characters as they are
+Private Function URLDecode(ByVal s As String) As String
+    Dim i As Long, out As String, b() As Byte, n As Long
+    If InStr(s, "%") = 0 Then URLDecode = s: Exit Function
+    i = 1
+    Do While i <= Len(s)
+        If Mid$(s, i, 1) = "%" And i + 2 <= Len(s) Then
+            n = 0: ReDim b(0 To Len(s))
+            Do While i + 2 <= Len(s)
+                If Mid$(s, i, 1) <> "%" Then Exit Do
+                b(n) = CByte("&H" & Mid$(s, i + 1, 2)): n = n + 1: i = i + 3
+            Loop
+            ReDim Preserve b(0 To n - 1)
+            out = out & Utf8(b)
+        Else
+            out = out & Mid$(s, i, 1): i = i + 1
+        End If
+    Loop
+    URLDecode = out
+End Function
+
+Private Function Utf8(b() As Byte) As String
+    Dim st As Object: Set st = CreateObject("ADODB.Stream")
+    st.Type = 1: st.Open: st.Write b: st.Position = 0
+    st.Type = 2: st.Charset = "utf-8"
+    Utf8 = st.ReadText: st.Close
+End Function

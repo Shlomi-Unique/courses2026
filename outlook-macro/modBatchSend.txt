@@ -1,0 +1,123 @@
+' ===== Paste into a new Module named modBatchSend =====
+' Sends the personal course drafts in batches: 50 now, then 50 every hour,
+' until none are left. Each draft goes through FixDraftIfLtr first
+' (RTL + Arial + signature), so FixAllDrafts is not required beforehand.
+'
+' Start:  run StartCourseSending
+' Stop:   run StopCourseSending (the drafts that were not sent stay in Drafts)
+' Log:    Documents\course_send_log.txt
+'
+' Outlook must stay open and the computer awake until the last batch.
+Option Explicit
+
+Private Const BATCH_SIZE As Long = 50
+Private Const WAIT_MINUTES As Long = 60
+Private Const SECONDS_BETWEEN As Double = 3     ' stay under Exchange's 30 messages per minute
+Public Const TIMER_SUBJECT As String = "BATCH_SEND_COURSE"
+
+Public Sub StartCourseSending()
+    Dim n As Long
+    n = CountCourseDrafts()
+    If n = 0 Then
+        MsgBox "No course drafts found in Drafts."
+        Exit Sub
+    End If
+    If MsgBox(n & " course drafts found." & vbCrLf & _
+              "Send " & BATCH_SIZE & " now and " & BATCH_SIZE & " every " & WAIT_MINUTES & " minutes?", _
+              vbYesNo + vbQuestion) <> vbYes Then Exit Sub
+    StopTimers
+    SendCourseBatch
+End Sub
+
+Public Sub StopCourseSending()
+    StopTimers
+    MsgBox "Batch sending stopped. " & CountCourseDrafts() & " course drafts left in Drafts."
+End Sub
+
+Public Sub SendCourseBatch()
+    Dim fld As Object, it As Object, todo As New Collection
+    Dim sent As Long, failed As Long, remaining As Long
+
+    Set fld = Application.Session.GetDefaultFolder(16)   ' Drafts
+    For Each it In fld.Items
+        If IsCourseDraft(it) Then todo.Add it
+    Next it
+
+    For Each it In todo
+        If sent >= BATCH_SIZE Then Exit For
+        On Error Resume Next
+        FixDraftIfLtr it
+        Err.Clear
+        it.Send
+        If Err.Number = 0 Then
+            sent = sent + 1
+        Else
+            failed = failed + 1
+            WriteLog "FAILED " & it.To & " : " & Err.Description
+        End If
+        On Error GoTo 0
+        Pause SECONDS_BETWEEN
+    Next it
+
+    remaining = todo.Count - sent - failed
+    WriteLog "Batch done: sent " & sent & ", failed " & failed & ", left " & remaining
+
+    If remaining > 0 Then
+        ScheduleNext
+    Else
+        StopTimers
+        MsgBox "All course drafts were sent." & IIf(failed > 0, vbCrLf & failed & " failed, see Documents\course_send_log.txt", "")
+    End If
+End Sub
+
+' The course drafts: one recipient, subject "<name>, ... AI, ... 13/10"
+Private Function IsCourseDraft(ByVal it As Object) As Boolean
+    If TypeName(it) <> "MailItem" Then Exit Function
+    If it.Sent Then Exit Function
+    If it.Recipients.Count <> 1 Then Exit Function
+    IsCourseDraft = (InStr(1, it.Subject, "-AI, ", vbTextCompare) > 0) And (InStr(1, it.Subject, "13/10") > 0)
+End Function
+
+Private Function CountCourseDrafts() As Long
+    Dim it As Object
+    For Each it In Application.Session.GetDefaultFolder(16).Items
+        If IsCourseDraft(it) Then CountCourseDrafts = CountCourseDrafts + 1
+    Next it
+End Function
+
+' A hidden-in-plain-sight task whose reminder fires in WAIT_MINUTES.
+' Application_Reminder in ThisOutlookSession catches it and sends the next batch.
+Private Sub ScheduleNext()
+    Dim t As Object
+    Set t = Application.CreateItem(3)   ' olTaskItem
+    t.Subject = TIMER_SUBJECT
+    t.ReminderSet = True
+    t.ReminderTime = DateAdd("n", WAIT_MINUTES, Now)
+    t.Save
+    WriteLog "Next batch at " & Format(t.ReminderTime, "hh:nn")
+End Sub
+
+Public Sub StopTimers()
+    Dim fld As Object, i As Long
+    Set fld = Application.Session.GetDefaultFolder(13)   ' Tasks
+    For i = fld.Items.Count To 1 Step -1
+        If fld.Items(i).Subject = TIMER_SUBJECT Then fld.Items(i).Delete
+    Next i
+End Sub
+
+Private Sub Pause(ByVal seconds As Double)
+    Dim t As Double
+    t = Timer
+    Do While Timer < t + seconds And Timer >= t
+        DoEvents
+    Loop
+End Sub
+
+Private Sub WriteLog(ByVal s As String)
+    Dim f As Integer, p As String
+    p = Environ$("USERPROFILE") & "\Documents\course_send_log.txt"
+    f = FreeFile
+    Open p For Append As #f
+    Print #f, Format(Now, "dd/mm hh:nn:ss") & "  " & s
+    Close #f
+End Sub

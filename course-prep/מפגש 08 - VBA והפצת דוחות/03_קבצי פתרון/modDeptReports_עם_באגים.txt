@@ -1,0 +1,35 @@
+' =====================================================================
+' מפגש 8 | פינת ה-AI: הגרסה הזו נכתבה "מהר", ויש בה 3 באגים.
+' מדביקים אותה ל-Claude או ל-Copilot עם פרומפט 3, ומבקשים למצוא ולתקן.
+' (הפתרון: modDeptReports.txt. רשימת הבאגים: בסוף הקובץ "פתרון - VBA והפצת דוחות.txt")
+' =====================================================================
+Option Explicit
+
+Public Sub SendDeptReportsBuggy()
+    Dim wsReport As Worksheet
+    Dim row As ListRow
+    Dim folder As String, pdfPath As String
+    Dim olApp As Object, olMail As Object
+    Dim deptNo As Variant
+
+    Set wsReport = ThisWorkbook.Names("DeptCell").RefersToRange.Worksheet
+    folder = ThisWorkbook.Path
+    Set olApp = CreateObject("Outlook.Application")
+
+    For Each row In wsReport.Parent.Worksheets(Range("DeptCell").Worksheet.Index + 4).ListObjects(1).ListRows
+        deptNo = row.Range.Cells(1, 1).Value
+        Range("DeptCell").Value = deptNo
+        pdfPath = folder & "Report_" & deptNo & ".pdf"
+
+        Set olMail = olApp.CreateItem(0)
+        With olMail
+            .To = row.Range.Cells(1, 2).Value
+            .Subject = Range("MailSubject").Value
+            .Body = Range("MailBody").Value
+            .Attachments.Add pdfPath
+            .Display
+        End With
+
+        wsReport.ExportAsFixedFormat Type:=xlTypePDF, Filename:=pdfPath
+    Next row
+End Sub

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<title>הכנת המחשב לקורס</title>
+<style>
+@page { size: A4; margin: 16mm 15mm; }
+body { font-family: Arial, "Noto Sans Hebrew", sans-serif; color:#1f2937; font-size:11pt; line-height:1.55; direction:rtl; }
+.top { background:#0d1b3e; color:#fff; padding:16px 20px; border-radius:10px; margin-bottom:16px; }
+.top h1 { margin:0 0 4px; font-size:20pt; }
+.top p { margin:0; color:#ffd27a; font-weight:bold; }
+h2 { color:#0d1b3e; font-size:14pt; border-bottom:2px solid #f5a623; padding-bottom:3px; margin:18px 0 8px; page-break-after:avoid; }
+h3 { color:#1a237e; font-size:11.5pt; margin:12px 0 4px; }
+ol, ul { margin:4px 0 8px; padding-right:22px; }
+li { margin-bottom:3px; }
+.path { background:#eef2f7; border-radius:5px; padding:1px 6px; font-weight:bold; white-space:nowrap; }
+.en { direction:ltr; unicode-bidi:embed; font-family: Consolas, Arial, sans-serif; }
+.box { border-radius:8px; padding:9px 13px; margin:8px 0; page-break-inside:avoid; }
+.must { background:#fdecec; border-right:5px solid #c62828; }
+.tip { background:#e8f6ee; border-right:5px solid #12804a; }
+.warn { background:#fff6e0; border-right:5px solid #f5a623; }
+table { width:100%; border-collapse:collapse; margin:8px 0; page-break-inside:avoid; }
+th, td { border:1px solid #cfd6e3; padding:6px 8px; text-align:right; vertical-align:top; font-size:10.5pt; }
+th { background:#0d1b3e; color:#fff; }
+.chk td:first-child { width:28px; text-align:center; font-size:13pt; }
+.foot { margin-top:18px; font-size:9.5pt; color:#6b7280; border-top:1px solid #e5e7eb; padding-top:6px; }
+.pb { page-break-before:always; }
+</style></head><body>
+
+<div class="top">
+<h1>הכנת המחשב לקורס "איש הכספים החדש"</h1>
+<p>מה להתקין ולבדוק לפני המפגש הראשון, יום שלישי 13/10 בשעה 17:00</p>
+</div>
+
+<p>במסמך הזה ארבעה שלבים. <b>שלבים 1 ו-2 הם חובה</b>, ושלבים 3 ו-4 מומלצים מאוד. אם המחשב שלך הוא מחשב עבודה, כדאי להעביר את המסמך כבר עכשיו למחלקת ה-IT, כי חלק מההתקנות דורשות את האישור שלהם ולוקחות כמה ימים.</p>
+
+<h2>שלב 1: בדיקת גרסת Excel (חובה)</h2>
+<p>בקורס נעבוד עם Power Query ו-Power Pivot. שניהם עובדים במלואם רק ב-<b>Excel של Microsoft 365, במחשב Windows</b>. ב-Mac ובגרסת הדפדפן אין Power Pivot.</p>
+<ol>
+<li>פותחים את Excel.</li>
+<li>לוחצים <span class="path">קובץ</span> ואז <span class="path">חשבון</span> (<span class="en">File &gt; Account</span>).</li>
+<li>תחת "פרטי מוצר" צריך להופיע <b>Microsoft 365</b> (למשל Microsoft 365 Apps for business או for enterprise).</li>
+</ol>
+<div class="box warn">אם מופיע Excel 2016, Excel 2019 או Office Home &amp; Student, ייתכן ש-Power Pivot לא זמין, ושהתוסף של Claude לא יעבוד. כדאי לפנות ל-IT, או לכתוב לי לפני המפגש.</div>
+
+<h2>שלב 2: הפעלת Power Pivot (חובה)</h2>
+<p>Power Pivot כבר מותקן ב-Excel, אבל כבוי כברירת מחדל. מפעילים אותו פעם אחת:</p>
+<ol>
+<li>ב-Excel לוחצים <span class="path">קובץ</span> ואז <span class="path">אפשרויות</span> (<span class="en">File &gt; Options</span>).</li>
+<li>בתפריט הימני בוחרים <span class="path">תוספות</span> (<span class="en">Add-ins</span>).</li>
+<li>בתחתית החלון, ברשימה הנפתחת "ניהול", בוחרים <span class="path">תוספות COM</span> (<span class="en">COM Add-ins</span>) ולוחצים על הכפתור שלידה (<span class="en">Go</span>).</li>
+<li>מסמנים את <b class="en">Microsoft Power Pivot for Excel</b> ולוחצים <span class="path">אישור</span>.</li>
+<li>בסרגל העליון של Excel תופיע לשונית חדשה בשם <b>Power Pivot</b>.</li>
+</ol>
+<div class="box tip"><b>Power Query לא צריך התקנה.</b> הוא נמצא בלשונית <span class="path">נתונים</span>, בקבוצה <span class="path">קבל והמר נתונים</span> (<span class="en">Data &gt; Get &amp; Transform Data</span>).</div>
+<div class="box warn">אם Power Pivot לא מופיע ברשימה, או שהוא מסומן ונעלם שוב: סגרו את Excel ופתחו מחדש. אם זה לא עוזר, ייתכן שהגרסה לא כוללת אותו או שהארגון חסם אותו. פנו ל-IT.</div>
+
+<h2>שלב 3: Claude בתוך Excel (מומלץ מאוד)</h2>
+<p>Claude for Excel הוא תוסף שמכניס את Claude ישירות לחלונית צד בתוך Excel. הוא קורא את הנתונים בגיליון, מסביר נוסחאות, מתקן שגיאות ובונה טבלאות ודוחות.</p>
+
+<h3>דרישות</h3>
+<table>
+<tr><th>דרישה</th><th>פירוט</th></tr>
+<tr><td>חשבון Claude</td><td><b>מנוי בתשלום:</b> Pro, Max, Team או Enterprise. <b>חשבון חינמי לא מספיק.</b></td></tr>
+<tr><td>גרסת Excel</td><td>Excel של Microsoft 365 ב-Windows (גרסה 16.0.13127.20296 ומעלה), Excel ל-Mac (16.46 ומעלה), או Excel באינטרנט.</td></tr>
+<tr><td>לא נתמך</td><td>Excel 2016 ו-2019 ברישיון קבוע, Excel ל-iPad ול-Android.</td></tr>
+</table>
+
+<h3>א. מחשב פרטי, או ארגון שמאפשר להתקין תוספות</h3>
+<ol>
+<li>נכנסים לדף התוסף בחנות של Microsoft: מחפשים בגוגל <b class="en">Claude for Microsoft 365 AppSource</b>, או נכנסים ישירות לכתובת:<br><span class="en">marketplace.microsoft.com/en-us/product/office/WA200010725</span></li>
+<li>לוחצים <b class="en">Get it now</b>.</li>
+<li>פותחים את Excel ולוחצים <span class="path">בית</span> ואז <span class="path">תוספות</span> (<span class="en">Home &gt; Add-ins</span>). בוחרים <b>Claude</b>.</li>
+<li>בחלונית שנפתחת מתחברים עם חשבון Claude.</li>
+</ol>
+<p>אותו תוסף פועל גם ב-Word וב-PowerPoint. ל-Outlook יש תוסף נפרד, שעדיין בגרסת בטא.</p>
+
+<h3>ב. מחשב ארגוני: ההתקנה נעשית דרך מנהל ה-IT</h3>
+<p>בארגונים רבים, עובדים לא יכולים להתקין תוספות בעצמם. במקרה כזה, מנהל מערכת ב-Microsoft 365 מתקין את התוסף מרכזית. <b>את החלק הזה כדאי להעביר כמו שהוא ל-IT:</b></p>
+<div class="box must">
+<ol>
+<li>נכנסים ל-<b class="en">Microsoft 365 Admin Center</b> (<span class="en">admin.microsoft.com</span>).</li>
+<li><span class="en">Settings &gt; Org Settings &gt; User owned apps and services</span>: מוודאים שהאפשרות <b class="en">Let users access the Office Store</b> מופעלת.</li>
+<li><span class="en">Settings &gt; Integrated apps &gt; Add-ins</span>.</li>
+<li>מחפשים ב-AppSource את <b class="en">Claude for Microsoft 365</b>.</li>
+<li>מקצים את התוסף לכל הארגון, או למשתמשים או לקבוצות מסוימים.</li>
+</ol>
+<p style="margin:4px 0 0">אם בארגון האפשרות "Let users access the Office Store" כבויה, אפשר להתקין באמצעות קובץ manifest. ההוראות המלאות נמצאות בתיעוד של Anthropic: <span class="en">claude.com/docs/office-agents/excel</span></p>
+</div>
+<p>אחרי שה-IT מתקין, התוסף מופיע ב-Excel תחת <span class="path">בית</span> ואז <span class="path">תוספות</span>, ומתחברים עם חשבון Claude.</p>
+<div class="box warn"><b>אבטחה:</b> עובדים עם Claude רק על קבצים שאתם סומכים עליהם. קבצים ממקור חיצוני עלולים להכיל הוראות נסתרות. ובכל מקרה, פועלים לפי מדיניות הארגון לגבי אילו נתונים מותר להעלות לכלי AI.</div>
+
+<h2>שלב 4: Copilot בתוך Excel (חלופה ל-Claude)</h2>
+<ul>
+<li><b>רישיון:</b> מאפריל 2026, Copilot בתוך Excel זמין רק למי שיש לו רישיון <b class="en">Microsoft 365 Copilot</b> בתשלום. בארגון, את הרישיון מקצה ה-IT.</li>
+<li><b>שמירה בענן:</b> כדי ש-Copilot יעבוד, הקובץ צריך להיות שמור ב-OneDrive או ב-SharePoint, עם שמירה אוטומטית (<span class="en">AutoSave</span>) מופעלת.</li>
+<li><b>בלי רישיון:</b> בדרך כלל עדיין יש גישה ל-<b class="en">Copilot Chat</b> בדפדפן. הוא מתאים לכתיבת קוד ונוסחאות ולהדבקה ב-Excel.</li>
+</ul>
+
+<div class="box tip"><b>אין לך אף אחד מהכלים?</b> זה בסדר. חשבון חינמי של Claude, ChatGPT או Copilot Chat בדפדפן מספיק לרוב התרגילים בקורס. נלמד לכתוב בהם קוד ונוסחאות ולהדביק אותם ב-Excel, שיטה שעובדת עם כל כלי.</div>
+
+<h2>רשימת בדיקה לפני 13/10</h2>
+<table class="chk">
+<tr><th>✓</th><th>מה בודקים</th></tr>
+<tr><td>☐</td><td>ב-<span class="path">קובץ &gt; חשבון</span> מופיע Microsoft 365, והמחשב הוא Windows</td></tr>
+<tr><td>☐</td><td>לשונית <b>Power Pivot</b> מופיעה בסרגל העליון</td></tr>
+<tr><td>☐</td><td>לשונית <b>נתונים</b> כוללת את "קבל נתונים" (Power Query)</td></tr>
+<tr><td>☐</td><td>Claude ב-Excel מותקן ומחובר, או Copilot ב-Excel פעיל, או לפחות כלי AI חינמי בדפדפן</td></tr>
+<tr><td>☐</td><td>זום מותקן במחשב, ואם אפשר, שני מסכים: אחד לזום ואחד ל-Excel</td></tr>
+</table>
+
+<p>נתקעת באחד השלבים? כתבי לי במייל, ונפתור את זה לפני המפגש.</p>
+<div class="foot">שלומי פוסטלניק · Microsoft Excel MVP · The UNIQUE Way · shlomi@uniquetech.co.il<br>
+המידע על Claude for Excel נכון לאוקטובר 2026, לפי התיעוד הרשמי של Anthropic. המידע על Copilot לפי הודעות Microsoft. התוספים מתעדכנים מעת לעת.</div>
+</body></html>

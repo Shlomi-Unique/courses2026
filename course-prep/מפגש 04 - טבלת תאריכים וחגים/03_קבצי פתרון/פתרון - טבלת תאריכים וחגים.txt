@@ -1,0 +1,212 @@
+מפגש 4: טבלת תאריכים עם חגים
+פתרון מלא: שאילתות Power Query (M), חיבור למודל ומדדים
+===========================================================
+
+סדר הבנייה:
+  1. fnEaster           פונקציה שמחשבת את תאריך הפסחא (Easter) לכל שנה
+  2. HolidaysIL         חגי ישראל מ-Hebcal
+  3. HolidaysMuslim     חגים מוסלמיים מ-Aladhan
+  4. HolidaysChristian  חגים נוצריים, בחישוב
+  5. HolidaysAll        איחוד שלושת המקורות (או קובץ הגיבוי)
+  6. DimDate            טבלת התאריכים, עם עמודת "יום עבודה"
+
+את 1 עד 5 טוענים כ"חיבור בלבד". רק את DimDate טוענים למודל הנתונים.
+
+שנים: 2025 עד 2027. כדי לשנות, מעדכנים את Years ב-HolidaysIL, HolidaysMuslim ו-HolidaysChristian,
+ואת Start ו-End ב-DimDate.
+
+
+-----------------------------------------------------------
+1. fnEaster  (שאילתה ריקה, מדביקים בעורך המתקדם)
+-----------------------------------------------------------
+(y as number) as date =>
+let
+    a = Number.Mod(y, 19),
+    b = Number.IntegerDivide(y, 100),
+    c = Number.Mod(y, 100),
+    d = Number.IntegerDivide(b, 4),
+    e = Number.Mod(b, 4),
+    f = Number.IntegerDivide(b + 8, 25),
+    g = Number.IntegerDivide(b - f + 1, 3),
+    h = Number.Mod(19 * a + b - d - g + 15, 30),
+    i = Number.IntegerDivide(c, 4),
+    k = Number.Mod(c, 4),
+    l = Number.Mod(32 + 2 * e + 2 * i - h - k, 7),
+    m = Number.IntegerDivide(a + 11 * h + 22 * l, 451),
+    mon = Number.IntegerDivide(h + l - 7 * m + 114, 31),
+    day = Number.Mod(h + l - 7 * m + 114, 31) + 1
+in
+    #date(y, mon, day)
+
+בדיקה: fnEaster(2025) = 20/04/2025, fnEaster(2026) = 05/04/2026, fnEaster(2027) = 28/03/2027
+
+
+-----------------------------------------------------------
+2. HolidaysIL  (חגי ישראל מ-Hebcal)
+-----------------------------------------------------------
+let
+    Years = {2025..2027},
+    GetYear = (y as number) as table =>
+        let
+            Src = Json.Document(Web.Contents("https://www.hebcal.com/hebcal",
+                [Query = [v = "1", cfg = "json", maj = "on", min = "on", mod = "on",
+                          nx = "off", ss = "off", mf = "off", c = "off", geo = "none",
+                          i = "on", year = Text.From(y)]])),
+            Items = Table.FromRecords(Src[items], {"title", "date", "category", "hebrew", "yomtov"}, MissingField.UseNull)
+        in
+            Items,
+    All = Table.Combine(List.Transform(Years, GetYear)),
+    OnlyHolidays = Table.SelectRows(All, each [category] = "holiday"),
+    AddDate = Table.AddColumn(OnlyHolidays, "תאריך", each Date.FromText(Text.Start([date], 10), [Format = "yyyy-MM-dd"]), type date),
+    AddOff = Table.AddColumn(AddDate, "יום חופש", each
+        if [yomtov] = true or Text.StartsWith([title], "Yom HaAtzma") then 1 else 0, Int64.Type),
+    AddHalf = Table.AddColumn(AddOff, "חצי יום", each
+        if Text.StartsWith([title], "Erev ") then 1 else 0, Int64.Type),
+    AddType = Table.AddColumn(AddHalf, "סוג", each
+        if [יום חופש] = 1 then "חג יהודי" else if [חצי יום] = 1 then "ערב חג" else "מועד יהודי", type text),
+    Result = Table.SelectColumns(
+        Table.RenameColumns(AddType, {{"hebrew", "שם החג"}}),
+        {"תאריך", "שם החג", "סוג", "יום חופש", "חצי יום"})
+in
+    Result
+
+הערות:
+- i=on מחזיר את לוח החגים של ישראל (יום טוב אחד, לא שניים כמו בחו"ל).
+- Hebcal מסמן yomtov=true רק לחגים מהתורה. יום העצמאות הוא חג "מודרני", ולכן מסמנים אותו ידנית כיום חופש.
+- ב-Hebcal ערב חג מופיע בשם שמתחיל ב-"Erev". זה הבסיס לעמודה "חצי יום".
+
+
+-----------------------------------------------------------
+3. HolidaysMuslim  (Aladhan, לפי חודש)
+-----------------------------------------------------------
+let
+    Years = {2025..2027},
+    Months = List.Combine(List.Transform(Years, (y) => List.Transform({1..12}, (m) => [y = y, m = m]))),
+    GetMonth = (r as record) as table =>
+        let
+            J = Json.Document(Web.Contents("https://api.aladhan.com/v1/gToHCalendar",
+                    [RelativePath = Text.From(r[m]) & "/" & Text.From(r[y])])),
+            T = Table.FromList(J[data], Splitter.SplitByNothing(), {"d"}),
+            AddDate = Table.AddColumn(T, "תאריך", each Date.FromText([d][gregorian][date], [Format = "dd-MM-yyyy"]), type date),
+            AddList = Table.AddColumn(AddDate, "שם החג", each [d][hijri][holidays])
+        in
+            Table.SelectColumns(AddList, {"תאריך", "שם החג"}),
+    All = Table.Combine(List.Transform(Months, GetMonth)),
+    Expanded = Table.ExpandListColumn(All, "שם החג"),
+    NotEmpty = Table.SelectRows(Expanded, each [שם החג] <> null and [שם החג] <> ""),
+    AddType = Table.AddColumn(NotEmpty, "סוג", each "חג מוסלמי", type text),
+    AddOff = Table.AddColumn(AddType, "יום חופש", each 0, Int64.Type),
+    AddHalf = Table.AddColumn(AddOff, "חצי יום", each 0, Int64.Type)
+in
+    AddHalf
+
+הערות:
+- 36 קריאות (חודש אחד בכל קריאה). אם זה איטי, אפשר לצמצם לשנה אחת.
+- שמות החגים חוזרים באנגלית (למשל "Eid-ul-Fitr"). אפשר לתרגם עם טבלת מיפוי קטנה, או לבקש מה-AI.
+- תאריכי החגים המוסלמיים תלויים במולד הירח, ויכולים לזוז ביום אחד מול התאריך בפועל.
+- לא מסמנים אותם כיום חופש, כי ברוב הארגונים בישראל הם לא יום חופש רשמי. ארגון עם עובדים מוסלמים יכול לשנות.
+
+
+-----------------------------------------------------------
+4. HolidaysChristian  (חישוב, בלי אינטרנט)
+-----------------------------------------------------------
+let
+    Years = {2025..2027},
+    PerYear = (y as number) as table =>
+        let e = fnEaster(y)
+        in #table(
+            type table [תאריך = date, שם החג = text],
+            {
+                {#date(y, 1, 1), "ראש השנה האזרחי"},
+                {Date.AddDays(e, -2), "יום שישי הטוב"},
+                {e, "פסחא"},
+                {#date(y, 12, 25), "חג המולד"}
+            }),
+    All = Table.Combine(List.Transform(Years, PerYear)),
+    AddType = Table.AddColumn(All, "סוג", each "חג נוצרי", type text),
+    AddOff = Table.AddColumn(AddType, "יום חופש", each 0, Int64.Type),
+    AddHalf = Table.AddColumn(AddOff, "חצי יום", each 0, Int64.Type)
+in
+    AddHalf
+
+
+-----------------------------------------------------------
+5. HolidaysAll
+-----------------------------------------------------------
+let
+    Source = Table.Combine({HolidaysIL, HolidaysMuslim, HolidaysChristian})
+in
+    Source
+
+גיבוי, כשהרשת בעבודה חוסמת את Hebcal או Aladhan:
+let
+    Src = Excel.Workbook(File.Contents("C:\Course\Session04\חגים 2025-2027 - קובץ גיבוי.xlsx"), true),
+    T = Src{[Item = "tblHolidays", Kind = "Table"]}[Data],
+    Typed = Table.TransformColumnTypes(T, {{"תאריך", type date}, {"יום חופש", Int64.Type}, {"חצי יום", Int64.Type}}),
+    Result = Table.SelectColumns(Typed, {"תאריך", "שם החג", "סוג", "יום חופש", "חצי יום"})
+in
+    Result
+(מעדכנים את הנתיב, או משתמשים בפרמטר הנתיב ממפגש 2.)
+
+
+-----------------------------------------------------------
+6. DimDate  (טבלת התאריכים)
+-----------------------------------------------------------
+let
+    Start = #date(2025, 1, 1),
+    End = #date(2027, 12, 31),
+    Dates = List.Dates(Start, Duration.Days(End - Start) + 1, #duration(1, 0, 0, 0)),
+    T = Table.FromList(Dates, Splitter.SplitByNothing(), {"תאריך"}),
+    Typed = Table.TransformColumnTypes(T, {{"תאריך", type date}}),
+    AddYear = Table.AddColumn(Typed, "שנה", each Date.Year([תאריך]), Int64.Type),
+    AddQ = Table.AddColumn(AddYear, "רבעון", each "Q" & Text.From(Date.QuarterOfYear([תאריך])), type text),
+    AddMonthNo = Table.AddColumn(AddQ, "מס חודש", each Date.Month([תאריך]), Int64.Type),
+    AddMonthName = Table.AddColumn(AddMonthNo, "שם חודש", each Date.MonthName([תאריך], "he-IL"), type text),
+    AddMonth = Table.AddColumn(AddMonthName, "חודש", each Date.StartOfMonth([תאריך]), type date),
+    AddDow = Table.AddColumn(AddMonth, "יום בשבוע", each Date.DayOfWeek([תאריך], Day.Sunday) + 1, Int64.Type),
+    AddDowName = Table.AddColumn(AddDow, "שם יום", each Date.DayOfWeekName([תאריך], "he-IL"), type text),
+    AddWeekend = Table.AddColumn(AddDowName, "סוף שבוע", each if [יום בשבוע] >= 6 then 1 else 0, Int64.Type),
+
+    // חג אחד או יותר באותו יום: מאחדים לשורה אחת לכל תאריך
+    HGrouped = Table.Group(HolidaysAll, {"תאריך"}, {
+        {"שמות חגים", each Text.Combine([שם החג], " / "), type text},
+        {"יום חופש", each List.Max([יום חופש]), Int64.Type},
+        {"חצי יום", each List.Max([חצי יום]), Int64.Type}}),
+    Merged = Table.NestedJoin(AddWeekend, {"תאריך"}, HGrouped, {"תאריך"}, "H", JoinKind.LeftOuter),
+    Expanded = Table.ExpandTableColumn(Merged, "H", {"שמות חגים", "יום חופש", "חצי יום"}),
+    FillOff = Table.ReplaceValue(Expanded, null, 0, Replacer.ReplaceValue, {"יום חופש", "חצי יום"}),
+    AddWork = Table.AddColumn(FillOff, "יום עבודה", each
+        if [סוף שבוע] = 1 or [יום חופש] = 1 then 0 else 1, Int64.Type),
+    FixHalf = Table.AddColumn(AddWork, "ערב חג בעבודה", each
+        if [יום עבודה] = 1 and [חצי יום] = 1 then 1 else 0, Int64.Type),
+    Sorted = Table.Sort(FixHalf, {{"תאריך", Order.Ascending}})
+in
+    Sorted
+
+בדיקה: 1,095 שורות (2025 עד 2027). ימי עבודה: 2025 = 253, 2026 = 256, 2027 = 255.
+הגדרת "יום עבודה": ראשון עד חמישי, ולא חג שהוא יום חופש (ראש השנה, יום כיפור, סוכות,
+שמיני עצרת, פסח, שביעי של פסח, שבועות, יום העצמאות).
+
+
+-----------------------------------------------------------
+7. חיבור למודל (מחליפים את tblMonth)
+-----------------------------------------------------------
+1. טוענים את DimDate למודל הנתונים.
+2. Power Pivot > עיצוב > סמן כטבלת תאריכים, לפי העמודה "תאריך".
+3. מוחקים את הקשרים אל tblMonth, ויוצרים קשרים חדשים:
+     tblGL[תאריך אסמכתא]  ->  DimDate[תאריך]
+     tblBudget[חודש]       ->  DimDate[תאריך]     (החודש בתקציב הוא היום הראשון בחודש, ולכן הוא מוצא התאמה)
+4. מסתירים את tblMonth (או מוחקים אותה).
+5. מיון: "שם חודש" לפי "מס חודש", "שם יום" לפי "יום בשבוע".
+
+
+-----------------------------------------------------------
+8. מדדים (DAX, טעימה לפני מפגש 5)
+-----------------------------------------------------------
+ימי עבודה := CALCULATE ( COUNTROWS ( DimDate ), DimDate[יום עבודה] = 1 )
+ביצוע ליום עבודה := DIVIDE ( [ביצוע], [ימי עבודה] )
+
+בדיקה, הכנסות ממכירות 2025:
+  אוקטובר: 194,500 ב-19 ימי עבודה = 10,237 ליום (ובסכום החודשי הוא נראה ממוצע)
+  מאי:     206,500 ב-20 ימי עבודה = 10,325 ליום
+  יוני:    144,000 ב-21 ימי עבודה =  6,857 ליום (החודש החלש באמת)

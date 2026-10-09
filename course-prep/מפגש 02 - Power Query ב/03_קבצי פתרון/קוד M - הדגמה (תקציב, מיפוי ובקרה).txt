@@ -1,0 +1,80 @@
+﻿// =====================================================================
+// מפגש 2 | Power Query ב | פתרון ההדגמה
+// 1) פרמטר מתא באקסל  2) תקציב: Unpivot ו-Append  3) מיפוי חשבונות: Merge
+// 4) בקרה: חשבונות שלא מופו (Anti Join)  5) תקציב מול ביצוע לפי סעיף
+// =====================================================================
+
+
+// ---------- 1) פרמטר מתא: fnParam ----------
+// בגיליון "הגדרות" יוצרים טבלה בשם tblSettings עם שתי עמודות: פרמטר | ערך
+// שורה לדוגמה: תיקיית קבצים | C:\Course\Session02\
+(name as text) as any =>
+let
+    Settings = Excel.CurrentWorkbook(){[Name = "tblSettings"]}[Content],
+    Row      = Table.SelectRows(Settings, each [פרמטר] = name){0},
+    Value    = Row[ערך]
+in
+    Value
+
+
+// ---------- 2) Budget_Long ----------
+let
+    Folder   = fnParam("תיקיית קבצים"),
+    Wb       = Excel.Workbook(File.Contents(Folder & "תקציב 2025-2026.xlsx"), null, true),
+    // כל הגיליונות ששמם מתחיל ב"תקציב": גם 2027 ייכנס לבד כשיתווסף גיליון
+    Sheets   = Table.SelectRows(Wb, each [Kind] = "Sheet" and Text.StartsWith([Name], "תקציב")),
+    Clean    = Table.AddColumn(Sheets, "T", each
+                  let
+                      s  = Table.Skip([Data], 3),
+                      h  = Table.PromoteHeaders(s, [PromoteAllScalars = true]),
+                      r  = Table.SelectRows(h, each [כרטיס חשבון] <> null and [כרטיס חשבון] <> "סה""כ"),
+                      d  = Table.RemoveColumns(r, {"סה""כ שנתי"}),
+                      u  = Table.UnpivotOtherColumns(d, {"כרטיס חשבון", "שם כרטיס", "מחלקה"}, "חודש", "תקציב")
+                  in
+                      u),
+    Appended = Table.Combine(Clean[T]),
+    Typed    = Table.TransformColumnTypes(
+                  Appended,
+                  {{"כרטיס חשבון", Int64.Type}, {"שם כרטיס", type text}, {"מחלקה", Int64.Type}, {"תקציב", type number}}),
+    // "2025-01" הופך לתאריך 01/01/2025
+    Month    = Table.TransformColumns(Typed, {{"חודש", each Date.FromText(_ & "-01"), type date}})
+in
+    Month
+
+
+// ---------- 3) GL_Mapped: יומן + סעיף דוח ----------
+// GL = השאילתה ממפגש 1 (או "גיבוי - יומן נקי 2025-2026.csv")
+// Account = tblAccount מתוך "טבלאות עזר.xlsx"
+let
+    Source   = GL,
+    PLOnly   = Table.SelectRows(Source, each [כרטיס חשבון] >= 4000),
+    Merged   = Table.NestedJoin(PLOnly, {"כרטיס חשבון"}, Account, {"כרטיס חשבון"}, "Acc", JoinKind.LeftOuter),
+    Expanded = Table.ExpandTableColumn(Merged, "Acc", {"סעיף דוח"}),
+    // סימן: בהנהלת חשבונות הכנסה היא זכות (שלילית). בדוח מציגים חיובי
+    Signed   = Table.AddColumn(Expanded, "ביצוע", each -[סכום], type number)
+in
+    Signed
+
+
+// ---------- 4) QA_Unmapped: חשבונות ביומן שאין להם מיפוי ----------
+let
+    Accts    = Table.Distinct(Table.SelectColumns(GL, {"כרטיס חשבון", "שם כרטיס"})),
+    Missing  = Table.NestedJoin(Accts, {"כרטיס חשבון"}, Account, {"כרטיס חשבון"}, "M", JoinKind.LeftAnti),
+    Result   = Table.RemoveColumns(Missing, {"M"})
+in
+    Result
+// תוצאה צפויה: שורה אחת, 6330 הוצאות משפטיות. אחרי שמוסיפים אותו ל-tblAccount ומרעננים: 0 שורות
+
+
+// ---------- 5) BvA_Line: תקציב מול ביצוע לפי סעיף וחודש ----------
+let
+    Act      = Table.Group(GL_Mapped, {"סעיף דוח", "חודש"}, {{"ביצוע", each List.Sum([ביצוע]), type number}}),
+    BudMap   = Table.ExpandTableColumn(
+                  Table.NestedJoin(Budget_Long, {"כרטיס חשבון"}, Account, {"כרטיס חשבון"}, "A", JoinKind.LeftOuter),
+                  "A", {"סעיף דוח"}),
+    Bud      = Table.Group(BudMap, {"סעיף דוח", "חודש"}, {{"תקציב", each List.Sum([תקציב]), type number}}),
+    Joined   = Table.NestedJoin(Bud, {"סעיף דוח", "חודש"}, Act, {"סעיף דוח", "חודש"}, "B", JoinKind.FullOuter),
+    Out      = Table.ExpandTableColumn(Joined, "B", {"ביצוע"})
+in
+    Out
+// הערה למרצה: זה עובד, אבל מסורבל. במפגש 3 נחליף את כל ה-Merge האלה במודל נתונים עם קשרים

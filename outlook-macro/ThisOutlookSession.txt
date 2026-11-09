@@ -1,0 +1,23 @@
+' ===== Paste into ThisOutlookSession =====
+Private WithEvents mInspectors As Outlook.Inspectors
+Private mWatchers As New Collection
+
+Private Sub Application_Startup()
+    Set mInspectors = Application.Inspectors
+End Sub
+
+' Batch sending timer (modBatchSend): the reminder fires, the next batch goes out
+Private Sub Application_Reminder(ByVal Item As Object)
+    If TypeName(Item) <> "TaskItem" Then Exit Sub
+    If Item.Subject <> TIMER_SUBJECT Then Exit Sub
+    Item.Delete
+    SendCourseBatch
+End Sub
+
+Private Sub mInspectors_NewInspector(ByVal Inspector As Outlook.Inspector)
+    If TypeName(Inspector.CurrentItem) <> "MailItem" Then Exit Sub
+    Dim w As clsDraftWatch
+    Set w = New clsDraftWatch
+    Set w.Insp = Inspector
+    mWatchers.Add w
+End Sub

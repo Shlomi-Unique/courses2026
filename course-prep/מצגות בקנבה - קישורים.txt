@@ -1,0 +1,15 @@
+קורס איש הכספים החדש בעידן ה-AI: המצגות בקנבה
+כל המצגות בתיקייה אחת: https://www.canva.com/folder/FAHXf3QTkhI
+
+מפגש 1   Power Query א                https://www.canva.com/d/TZKnfL_SM3G5Li5
+מפגש 2   Power Query ב                https://www.canva.com/d/o6KZFYMHW_3Y-74
+מפגש 3   מודל נתונים                   https://www.canva.com/d/DvDclFkrgzuID7W
+מפגש 4   טבלת תאריכים וחגים            https://www.canva.com/d/Zb1UiQzRcAsAaSV
+מפגש 5   מדדים ודשבורד                 https://www.canva.com/d/sbzSrbVA0I5uTUJ
+מפגש 6   נוסחאות מערך וקוביות          https://www.canva.com/d/iosz6TCMOi6GOY_
+מפגש 7   שכר                           https://www.canva.com/d/I13YcfAjK8NFCag
+מפגש 8   דוח אישי לכל מנהל (VBA)       https://www.canva.com/d/lie0WnP6s97Ij6c
+מפגש 9   חבילת סגירת חודש              https://www.canva.com/d/ikjy5kNel287hO8
+מפגש 10  סוכני בינה מלאכותית           https://www.canva.com/d/J5QXH2YeXlUPlz_
+
+אחרי ההורדה מקנבה, שמים כל מצגת בתיקייה 01_מצגת של המפגש שלה.

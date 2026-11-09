@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>תודה על ההרשמה! · איש הכספים החדש</title>
+<meta name="robots" content="noindex">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PNZGFEQQD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4PNZGFEQQD');
+</script>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2111674275733961');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2111674275733961&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+
+<!-- ===== Purchase conversion (fires once per visit) ===== -->
+<script>
+(function () {
+  try {
+    // Only fire once per browser session (guards against refresh double-counting)
+    if (sessionStorage.getItem('purchase_tracked') === '1') return;
+
+    // Use the real amount if SUMIT passes it in the URL; else fall back to launch price
+    function getParam(names) {
+      var q = new URLSearchParams(window.location.search);
+      for (var i = 0; i < names.length; i++) {
+        var v = q.get(names[i]);
+        if (v && !isNaN(parseFloat(v))) return parseFloat(v);
+      }
+      return null;
+    }
+    var value = getParam(['total', 'amount', 'sum', 'price', 'paymentsum']) || 2990;
+
+    if (window.fbq) fbq('track', 'Purchase', { value: value, currency: 'ILS' });
+    if (window.gtag) gtag('event', 'purchase', { value: value, currency: 'ILS' });
+
+    sessionStorage.setItem('purchase_tracked', '1');
+  } catch (e) {}
+})();
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Heebo',Arial,sans-serif; direction:rtl; text-align:center;
+  background:linear-gradient(135deg,#0d1b3e 0%,#1a237e 100%);
+  color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+}
+.card {
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+  border-radius:24px; max-width:560px; width:100%; padding:48px 32px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4); backdrop-filter:blur(6px);
+}
+.check {
+  width:88px; height:88px; margin:0 auto 22px; border-radius:50%;
+  background:#18a558; display:flex; align-items:center; justify-content:center;
+  font-size:2.8em; box-shadow:0 8px 26px rgba(24,165,88,0.5);
+}
+h1 { font-size:2em; font-weight:900; margin-bottom:12px; }
+h1 .accent { background:linear-gradient(90deg,#f5a623,#ffd27a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+p { font-size:1.08em; color:rgba(255,255,255,0.85); line-height:1.7; margin-bottom:14px; }
+.details {
+  background:rgba(245,166,35,0.12); border:1px solid rgba(245,166,35,0.4);
+  border-radius:14px; padding:16px 20px; margin:24px 0; color:#ffd27a; font-weight:700;
+}
+.btn {
+  display:inline-block; margin-top:10px; background:linear-gradient(135deg,#f5a623,#ffba3a);
+  color:#0d1b3e; font-weight:800; font-size:1.05em; padding:14px 34px; border-radius:40px;
+  text-decoration:none; transition:transform .18s, box-shadow .18s;
+}
+.btn:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(245,166,35,0.5); }
+.mvp { font-size:0.92em; color:rgba(255,255,255,0.6); margin-top:26px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="check">✓</div>
+    <h1>תודה! ההרשמה <span class="accent">התקבלה</span> 🎉</h1>
+    <p>ברוך הבא לקורס <b>"איש הכספים החדש"</b>. שמחים שהצטרפת! 🙌</p>
+    <div class="details">
+      📅 הקורס מתחיל ב-13/10/2026 · כל יום שלישי, 17:00 עד 20:00, בזום<br>
+      📩 פרטי ההתחברות והחומרים יישלחו אליך למייל.
+    </div>
+    <p>יש לך שאלה? אנחנו כאן:</p>
+    <a class="btn" href="https://wa.me/972505504870?text=%D7%94%D7%99%D7%99%2C%20%D7%A0%D7%A8%D7%A9%D7%9E%D7%AA%D7%99%20%D7%9C%D7%A7%D7%95%D7%A8%D7%A1%20%D7%90%D7%99%D7%A9%20%D7%94%D7%9B%D7%A1%D7%A4%D7%99%D7%9D%20%D7%94%D7%97%D7%93%D7%A9%20%F0%9F%99%82" target="_blank" rel="noopener">💬 דברו איתנו בוואטסאפ</a>
+    <div class="mvp">🏆 שלומי · Microsoft Excel MVP · The UNIQUE Way</div>
+  </div>
+</body>
+</html>
